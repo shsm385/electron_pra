@@ -1,0 +1,12 @@
+{
+  "name": "sleep_search",
+  "version": "1.0.0",
+  "description": "サンプル",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "HiroshiShimada",
+  "license": "ISC"
+}
