@@ -18,10 +18,10 @@ function comeTweet(){
   var params = {screen_name: 'nodejs'};
 
   client.post('statuses/update',
-    {status: 'asfi君がおそらく研究をはじめました.'},
+    {status: 'asfi君がおそらく研究をはじめました.' + " at " + getData()},
       function(error, tweet, response) {
         if (!error) {
-            console.log(tweet)
+            console.log(tweet);
         }
     });
 }
@@ -37,10 +37,12 @@ function sleepTweet(){
   var params = {screen_name: 'nodejs'};
 
   client.post('statuses/update',
-    {status: 'アスフィー君がおそらく研究を中断しました.'},
+    {status: 'アスフィー君がおそらく研究を中断しました.' + " at " + getData()},
       function(error, tweet, response) {
         if (!error) {
-            console.log(tweet)
+            console.log(tweet);
+        }else{
+          //console.log(tweet);
         }
     });
 }
@@ -59,14 +61,14 @@ app.on('ready', function(){
     console.log(getData());
     sleepTweet();
     mainWindow.webContents.send('asynchronous-reply', 'suspend');
-  })
+  });
 
 
   electron.powerMonitor.on('resume', () => {
     console.log('resume');
     console.log(getData());
     comeTweet();
-  })
+  });
 
   createWindow();
 
