@@ -3,11 +3,15 @@
 const nodeStatic = require('node-static');
 const electron = require("electron");
 const twitter = require("twitter");
+const Datastore = require('nedb');
+const db = new Datastore({
+  filename: 'date.db',
+  autoload: true
+});
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const file = new nodeStatic.Server(__dirname + "/web/");
 let mainWindow;
-
 
 require('http').createServer(function (request, response) {
     request.addListener('end', function () {
@@ -15,48 +19,49 @@ require('http').createServer(function (request, response) {
     }).resume();
 }).listen(12345);
 
+const client = new twitter({
+  consumer_key: 'P2fdGQlfg99fYcKGjW60BXpwz',
+  consumer_secret:'uBDqvkOJeNmC5u4XL8hQdZdMVC4PgItWSBbJkSPz1o5LdwLKxj',
+  access_token_key: '923019016255324160-oz51qbDLhiOiywbfvC8UGIK3f65z4K2',
+  access_token_secret: 'CicH8Pt4Ufxy2xg7gvH8UH5DudrTcL7IJ8P98NHdciTlh'
+});
 
 function comeTweet(){
-  var client = new twitter({
-    consumer_key: 'P2fdGQlfg99fYcKGjW60BXpwz',
-    consumer_secret:'uBDqvkOJeNmC5u4XL8hQdZdMVC4PgItWSBbJkSPz1o5LdwLKxj',
-    access_token_key: '923019016255324160-oz51qbDLhiOiywbfvC8UGIK3f65z4K2',
-    access_token_secret: 'CicH8Pt4Ufxy2xg7gvH8UH5DudrTcL7IJ8P98NHdciTlh'
-  });
-
-  var params = {screen_name: 'nodejs'};
+  const params = {screen_name: 'nodejs'};
+  let time = getTime();
+  let date = getDate() + time;
 
   client.post('statuses/update',
-    {status: 'asfi君がおそらく研究をはじめました.' + " at " + getData()},
+    {status: 'asfi君がおそらく研究をはじめました.' + " at " + time},
       function(error, tweet, response) {
         if (!error) {
-            console.log(tweet);
+          db.insert({start: date});
+          db.find().sort({ date: -1 }).limit(10).exec(function (err, data) {
+    console.log(data);
+});
+        }else{
+            console.log("エラー");
         }
     });
 }
 
 function sleepTweet(){
-  var client = new twitter({
-    consumer_key: 'P2fdGQlfg99fYcKGjW60BXpwz',
-    consumer_secret:'uBDqvkOJeNmC5u4XL8hQdZdMVC4PgItWSBbJkSPz1o5LdwLKxj',
-    access_token_key: '923019016255324160-oz51qbDLhiOiywbfvC8UGIK3f65z4K2',
-    access_token_secret: 'CicH8Pt4Ufxy2xg7gvH8UH5DudrTcL7IJ8P98NHdciTlh'
-  });
-
-  var params = {screen_name: 'nodejs'};
+  const params = {screen_name: 'nodejs'};
+  let time = getTime();
+  let date = getDate() + time;
 
   client.post('statuses/update',
-    {status: 'アスフィー君がおそらく研究を中断しました.' + " at " + getData()},
+    {status: 'アスフィー君がおそらく研究を中断しました.' + " at " + time},
       function(error, tweet, response) {
         if (!error) {
-            console.log(tweet);
+            db.insert({stop: date});
+            db.find().sort({ date: -1 }).limit(10).exec(function (err, data) {
+    console.log(data);});
         }else{
-          //console.log(tweet);
+            console.log("エラー");
         }
     });
 }
-
-
 
 app.on('window-all-closed', function(){
   if(process.platform != 'darwin'){
@@ -67,7 +72,6 @@ app.on('window-all-closed', function(){
 app.on('ready', function(){
   electron.powerMonitor.on('suspend', () => {
     console.log('suspend');
-    console.log(getData());
     sleepTweet();
     mainWindow.webContents.send('asynchronous-reply', 'suspend');
   });
@@ -75,7 +79,6 @@ app.on('ready', function(){
 
   electron.powerMonitor.on('resume', () => {
     console.log('resume');
-    console.log(getData());
     comeTweet();
   });
 
@@ -92,19 +95,29 @@ app.on('ready', function(){
 
 function createWindow(){
   mainWindow = new BrowserWindow({
-    width:300,
-    height:300
+    width:0,
+    height:0
   });
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 }
 
 
-function getData(){
-  var jikan= new Date();
-  var hour = jikan.getHours();
-  var minute = jikan.getMinutes();
-  var second = jikan.getSeconds();
+function getTime(){
+  const date = new Date();
+  let hour = date.getHours();
+  let minute = date.getMinutes();
+  let second = date.getSeconds();
 
-  var text = hour+":"+minute+":"+second;
-  return text;
+  let time = hour+ ":" + minute + ":" + second;
+  return time;
+}
+
+function getDate(){
+  const date = new Date();
+  let year = date.getFullYear();
+  let month = date.getMonth();
+  let day = date.getDate();
+
+  let res = year + "/" + month + "/" + day + " ";
+  return res;
 }
