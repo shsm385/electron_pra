@@ -1,11 +1,20 @@
 'use strict';
 
+const nodeStatic = require('node-static');
 const electron = require("electron");
 const twitter = require("twitter");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
-
+const file = new nodeStatic.Server(__dirname + "/web/");
 let mainWindow;
+
+
+require('http').createServer(function (request, response) {
+    request.addListener('end', function () {
+        file.serve(request, response);
+    }).resume();
+}).listen(12345);
+
 
 function comeTweet(){
   var client = new twitter({
@@ -72,6 +81,8 @@ app.on('ready', function(){
 
   createWindow();
 
+  mainWindow.loadURL('http://localhost:12345/index.html');
+
   mainWindow.on('closed',function(){
     mainWindow = null;
   });
@@ -81,8 +92,8 @@ app.on('ready', function(){
 
 function createWindow(){
   mainWindow = new BrowserWindow({
-    width:0,
-    height:0
+    width:300,
+    height:300
   });
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 }
