@@ -1,12 +1,26 @@
 {
-  "name": "sleep_search",
+  "name": "messenger",
   "version": "1.0.0",
   "description": "サンプル",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node_modules/.bin/electron .",
+    "build": "node build.js"
   },
   "keywords": [],
   "author": "HiroshiShimada",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "electron-packager": "^10.1.0",
+    "electron-prebuilt": "^1.4.13",
+    "nedb": "^1.8.0",
+    "node-static": "^0.7.10",
+    "twitter": "^1.7.1"
+  },
+  "dependencies": {
+    "cron": "^1.3.0",
+    "nedb": "^1.8.0",
+    "node-static": "^0.7.10",
+    "twitter": "^1.7.1"
+  }
 }
