@@ -2,3 +2,4 @@
 .DS_Store
 *.swp
 *.db
+./sleep_ search/node_modules/*
